@@ -9,11 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdvertController extends Controller
 {
-  public function indexAction()
+  public function indexAction($page)
   {
     $content = $this->get('templating')
         ->render('OCPlatformBundle:Advert:index.html.twig',
-            array('nom' => "winzu")
+            array('nom' => "winzu", "page" => $page)
             );
 
     return new Response($content);
