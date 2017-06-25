@@ -1,7 +1,29 @@
-oc_platform_homepage:
-    path:     /
-    defaults: { _controller: OCPlatformBundle:Default:index }
-
 hello_the_world:
     path:    /hello-world
-    defaults: { _controller: OCPlatformBundle:Advert:index }    
+    defaults: { _controller: OCPlatformBundle:Advert:index }
+    
+bye_the_world:
+    path:    /byebye-world
+    defaults: { _controller: OCPlatformBundle:Advert:bye }
+
+oc_platform_home:
+    path:      /platform
+    defaults: { _controller: OCPlatformBundle:Advert:index }
+    
+oc_platform_view:
+    path:      /platform/advert/{id}
+    defaults: { _controller: OCPlatformBundle:Advert:view }
+    
+oc_platform_add:
+    path:      /platform/add
+    defaults: { _controller: OCPlatformBundle:Advert:add }
+    
+pc_platform_view_slug:
+    path:    /platform/{year}/{slug}.{format}
+    defaults:
+        _controller: OCPlatformBundle:Advert:viewSlug
+        format: html
+    requirements:
+        year:   \d{4}
+        format: html|xml
+    
