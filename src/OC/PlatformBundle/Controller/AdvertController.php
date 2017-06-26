@@ -19,7 +19,7 @@ class AdvertController extends Controller
 
     return new Response($content);
   }
-  // ------------------------
+  // ========================================
   public function byeAction()
   {
     $content = $this->get('templating')
@@ -29,7 +29,7 @@ class AdvertController extends Controller
 
     return new Response($content);
   }
-  // ------------------------
+  // ========================================
   public function viewAction($id, Request $request)
   {
     $tag = $request->query->get('tag');
@@ -51,7 +51,7 @@ class AdvertController extends Controller
           ,'name' => 'sam'  // Test
         ));
   }
-  // ------------------------
+  // ========================================
   public function viewSlugAction($year, $slug, $format)
   {
     $response = "On pourrait afficher l'annonce correspondant au slug "
@@ -64,5 +64,59 @@ class AdvertController extends Controller
 
     return new Response($response);
   }
-  // ------------------------
+  // ========================================
+  public function redirectAction()
+  {
+    return $this->redirectToRoute('oc_platform_home');
+  }
+  // ========================================
+  public function sessionAction(Request $request)
+  {
+    $session = $request->getSession();
+
+    $userId = $session->get('user_id');
+
+    $session->set('user_id', 91);
+
+    return new Response("<body>Je suis une page de test</body>");
+  }
+  // ========================================
+  public function addAction(Request $request)
+  {
+    $session = $request->getSession();
+
+    // Bien sûr, cette méthode devra réellement ajouter l'annonce
+
+    // Mais faisons comme si c'était le cas
+    $session->getFlashBag()->add('info', 'Annonce bien enregistrée');
+
+    // Le « flashBag » est ce qui contient les messages flash dans la session
+    // Il peut bien sûr contenir plusieurs messages :
+    $session->getFlashBag()->add('info', 'Oui oui, elle est bien enregistrée !');
+
+    // Puis on redirige vers la page de visualisation de cette annonce
+    return $this->redirectToRoute('oc_platform_viewflash', array('id' => 5));
+  }
+  // ========================================
+  public function viewFlashAction($id, Request $request)
+  {
+    $tag = $request->query->get('tag');
+
+//    return new Response(
+//         "affichage de l'annonce d'id: ".$id
+//        ." avec le tag: ".$tag
+//        );
+
+//    return $this
+//        ->get('templating')
+//        ->renderResponse('OCPlatformBundle:Advert:view.html.twig'
+//            , array('id' => $id, 'tag' => $tag)
+//            );
+    return $this->render('OCPlatformBundle:Advert:viewFlashSession.html.twig',
+        array(
+           'id'   => $id
+          ,'tag'  => $tag
+          ,'name' => 'sam'  // Test
+        ));
+  }
 }

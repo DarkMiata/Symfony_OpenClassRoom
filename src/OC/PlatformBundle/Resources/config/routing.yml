@@ -40,7 +40,7 @@ oc_platform_delete:
     requirements:
         id: \d+       
        
-pc_platform_view_slug:
+oc_platform_view_slug:
     path:    /{year}/{slug}.{format}
     defaults:
         _controller: OCPlatformBundle:Advert:viewSlug
@@ -49,3 +49,17 @@ pc_platform_view_slug:
         year:   \d{4}
         format: html|xml
     
+oc_platform_redirect:
+    path: /redirect
+    defaults:
+        _controller: OCPlatformBundle:Advert:redirect
+        
+oc_platform_session:
+    path: /session
+    defaults:
+        _controller: OCPlatformBundle:Advert:session
+
+oc_platform_viewflash:
+    path: /flashsession/{id}
+    defaults:
+        _controller: OCPlatformBundle:Advert:viewFlash
