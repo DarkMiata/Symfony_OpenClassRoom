@@ -1,16 +1,10 @@
-hello_the_world:
-    path:    /hello-world
-    defaults: { _controller: OCPlatformBundle:Advert:index }
-    
-bye_the_world:
-    path:    /byebye-world
-    defaults: { _controller: OCPlatformBundle:Advert:bye }
+# src/OC/PlatformBundle/Resources/config/routing.yml
 
 oc_platform_home:
     path:      /{page}
     defaults:
         _controller: OCPlatformBundle:Advert:index
-        page:    1
+        page:        1
     requirements:
         page: \d*
     
@@ -19,7 +13,7 @@ oc_platform_view:
     defaults:
         _controller: OCPlatformBundle:Advert:view
     requirements:
-        id: \d*
+        id: \d+
 
 oc_platform_add:
     path:      /add
@@ -38,28 +32,4 @@ oc_platform_delete:
     defaults:
         _controller: OCPlatformBundle:Advert:delete
     requirements:
-        id: \d+       
-       
-oc_platform_view_slug:
-    path:    /{year}/{slug}.{format}
-    defaults:
-        _controller: OCPlatformBundle:Advert:viewSlug
-        format: html
-    requirements:
-        year:   \d{4}
-        format: html|xml
-    
-oc_platform_redirect:
-    path: /redirect
-    defaults:
-        _controller: OCPlatformBundle:Advert:redirect
-        
-oc_platform_session:
-    path: /session
-    defaults:
-        _controller: OCPlatformBundle:Advert:session
-
-oc_platform_viewflash:
-    path: /flashsession/{id}
-    defaults:
-        _controller: OCPlatformBundle:Advert:viewFlash
+        id: \d+

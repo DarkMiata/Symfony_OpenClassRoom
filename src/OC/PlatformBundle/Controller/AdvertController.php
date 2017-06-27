@@ -5,118 +5,111 @@
 namespace OC\PlatformBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdvertController extends Controller
 {
   public function indexAction($page)
   {
-    $content = $this->get('templating')
-        ->render('OCPlatformBundle:Advert:index.html.twig',
-            array('nom' => "winzu", "page" => $page)
-            );
+    if ($page < 1) {
+      throw new NotFoundHttpException('Page "'.$page.'" inexistante.');
+    }
 
-    return new Response($content);
+    // Notre liste d'annonce en dur
+    $listAdverts = array(
+      array(
+        'title'   => 'Recherche développpeur Symfony',
+        'id'      => 1,
+        'author'  => 'Alexandre',
+        'content' => 'Nous recherchons un développeur Symfony débutant sur Lyon. Blabla…',
+        'date'    => new \Datetime()),
+      array(
+        'title'   => 'Mission de webmaster',
+        'id'      => 2,
+        'author'  => 'Hugo',
+        'content' => 'Nous recherchons un webmaster capable de maintenir notre site internet. Blabla…',
+        'date'    => new \Datetime()),
+      array(
+        'title'   => 'Offre de stage webdesigner',
+        'id'      => 3,
+        'author'  => 'Mathieu',
+        'content' => 'Nous proposons un poste pour webdesigner. Blabla…',
+        'date'    => new \Datetime())
+    );
+
+    return $this->render('OCPlatformBundle:Advert:index.html.twig', array(
+      'listAdverts' => $listAdverts,
+    ));
   }
-  // ========================================
-  public function byeAction()
+
+  public function viewAction($id)
   {
-    $content = $this->get('templating')
-        ->render('OCPlatformBundle:Advert:bye.html.twig',
-            array('nom' => "Sam")
-            );
+    $advert = array(
+      'title'   => 'Recherche développpeur Symfony',
+      'id'      => $id,
+      'author'  => 'Alexandre',
+      'content' => 'Nous recherchons un développeur Symfony débutant sur Lyon. Blabla…',
+      'date'    => new \Datetime()
+    );
 
-    return new Response($content);
+    return $this->render('OCPlatformBundle:Advert:view.html.twig', array(
+      'advert' => $advert
+    ));
   }
-  // ========================================
-  public function viewAction($id, Request $request)
-  {
-    $tag = $request->query->get('tag');
 
-//    return new Response(
-//         "affichage de l'annonce d'id: ".$id
-//        ." avec le tag: ".$tag
-//        );
-
-//    return $this
-//        ->get('templating')
-//        ->renderResponse('OCPlatformBundle:Advert:view.html.twig'
-//            , array('id' => $id, 'tag' => $tag)
-//            );
-    return $this->render('OCPlatformBundle:Advert:view.html.twig',
-        array(
-           'id'   => $id
-          ,'tag'  => $tag
-          ,'name' => 'sam'  // Test
-        ));
-  }
-  // ========================================
-  public function viewSlugAction($year, $slug, $format)
-  {
-    $response = "On pourrait afficher l'annonce correspondant au slug "
-        .$slug
-        .", créé en "
-        .$year
-        ." et au format "
-        .$format
-        ;
-
-    return new Response($response);
-  }
-  // ========================================
-  public function redirectAction()
-  {
-    return $this->redirectToRoute('oc_platform_home');
-  }
-  // ========================================
-  public function sessionAction(Request $request)
-  {
-    $session = $request->getSession();
-
-    $userId = $session->get('user_id');
-
-    $session->set('user_id', 91);
-
-    return new Response("<body>Je suis une page de test</body>");
-  }
-  // ========================================
   public function addAction(Request $request)
   {
-    $session = $request->getSession();
+    // Si la requête est en POST, c'est que le visiteur a soumis le formulaire
+    if ($request->isMethod('POST')) {
+      $request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
 
-    // Bien sûr, cette méthode devra réellement ajouter l'annonce
+      // Puis on redirige vers la page de visualisation de cettte annonce
+      return $this->redirectToRoute('oc_platform_view', array('id' => 5));
+    }
 
-    // Mais faisons comme si c'était le cas
-    $session->getFlashBag()->add('info', 'Annonce bien enregistrée');
-
-    // Le « flashBag » est ce qui contient les messages flash dans la session
-    // Il peut bien sûr contenir plusieurs messages :
-    $session->getFlashBag()->add('info', 'Oui oui, elle est bien enregistrée !');
-
-    // Puis on redirige vers la page de visualisation de cette annonce
-    return $this->redirectToRoute('oc_platform_viewflash', array('id' => 5));
+    // Si on n'est pas en POST, alors on affiche le formulaire
+    return $this->render('OCPlatformBundle:Advert:add.html.twig');
   }
-  // ========================================
-  public function viewFlashAction($id, Request $request)
+
+  public function editAction($id, Request $request)
   {
-    $tag = $request->query->get('tag');
+    if ($request->isMethod('POST')) {
+      $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
 
-//    return new Response(
-//         "affichage de l'annonce d'id: ".$id
-//        ." avec le tag: ".$tag
-//        );
+      return $this->redirectToRoute('oc_platform_view', array('id' => 5));
+    }
 
-//    return $this
-//        ->get('templating')
-//        ->renderResponse('OCPlatformBundle:Advert:view.html.twig'
-//            , array('id' => $id, 'tag' => $tag)
-//            );
-    return $this->render('OCPlatformBundle:Advert:viewFlashSession.html.twig',
-        array(
-           'id'   => $id
-          ,'tag'  => $tag
-          ,'name' => 'sam'  // Test
-        ));
+    $advert = array(
+      'title'   => 'Recherche développpeur Symfony',
+      'id'      => $id,
+      'author'  => 'Alexandre',
+      'content' => 'Nous recherchons un développeur Symfony débutant sur Lyon. Blabla…',
+      'date'    => new \Datetime()
+    );
+
+    return $this->render('OCPlatformBundle:Advert:edit.html.twig', array(
+      'advert' => $advert
+    ));
+  }
+
+  public function deleteAction($id)
+  {
+    return $this->render('OCPlatformBundle:Advert:delete.html.twig');
+  }
+
+  public function menuAction($limit)
+  {
+    // On fixe en dur une liste ici, bien entendu par la suite on la récupérera depuis la BDD !
+    $listAdverts = array(
+      array('id' => 2, 'title' => 'Recherche développeur Symfony'),
+      array('id' => 5, 'title' => 'Mission de webmaster'),
+      array('id' => 9, 'title' => 'Offre de stage webdesigner')
+    );
+
+    return $this->render('OCPlatformBundle:Advert:menu.html.twig', array(
+      // Tout l'intérêt est ici : le contrôleur passe les variables nécessaires au template !
+      'listAdverts' => $listAdverts
+    ));
   }
 }
