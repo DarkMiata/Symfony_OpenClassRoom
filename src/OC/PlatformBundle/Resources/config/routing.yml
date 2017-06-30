@@ -33,13 +33,3 @@ oc_platform_delete:
         _controller: OCPlatformBundle:Advert:delete
     requirements:
         id: \d+
-
-oc_platform_testSam:
-    path:    /test
-    defaults:
-        _controller: OCPlatformBundle:Advert:testSam
-
-oc_platform_find:
-    path:    /find/{author}
-    defaults:
-        _controller: OCPlatformBundle:Advert:find
