@@ -58,8 +58,14 @@ class AdvertController extends Controller
     ));
   }
 
+  // ========================================
+  // Route: http://localhost/Symfony/web/app_dev.php/platform/add
   public function addAction(Request $request)
   {
+    $advert = new \OC\PlatformBundle\Entity\Advert;
+
+    $this->testWriteAdvert($advert);
+
     // Si la requête est en POST, c'est que le visiteur a soumis le formulaire
     if ($request->isMethod('POST')) {
       $request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
@@ -111,5 +117,64 @@ class AdvertController extends Controller
       // Tout l'intérêt est ici : le contrôleur passe les variables nécessaires au template !
       'listAdverts' => $listAdverts
     ));
+  }
+  // ========================================
+  // Exemple: http://localhost/Symfony/web/app_dev.php/platform/find/Sam
+  public function findAction($author)
+  {
+    $repository = $this->getDoctrine()->getManager()->getRepository('OCPlatformBundle:Advert');
+    $listAdverts = $repository->findOneByAuthor($author);
+
+    if (null === $listAdverts) {
+      throw new \Symfony\Component\Translation\Exception\NotFoundResourceException("L'auteur ".$author." n'existe pas dans la BDD");
+    }
+
+    return $this->render('OCPlatformBundle:Advert:findByAuthor.html.twig',
+        array('author' => $author,
+              'result' => $listAdverts)
+        );
+  }
+  // ========================================
+  public function testSamAction()
+  {
+    $repository = $this->getDoctrine()->getManager()
+        ->getRepository('OCPlatformBundle:Advert');
+
+    $messages = $repository->find(1);
+
+    if (null === $messages) {
+      throw new NotFoundHttpException("l'id 1 n'existe pas dans la BDD");
+    }
+
+      return $this->render('OCPlatformBundle:Advert:testSam.html.twig',
+          array('advert' => $messages));
+  }
+
+  // ========================================
+  // Appelez par addAction()
+  private function testWriteAdvert(\OC\PlatformBundle\Entity\Advert $advert)
+  {
+    $img = new \OC\PlatformBundle\Entity\Image;
+
+    $img->setUrl("blabla.com>/img/img5.jpg");
+    $img->setAlt("blabla.com/alt/alt5.jpg");
+
+    $advert->setTitle('Recherche développeur C.');
+    $advert->setAuthor('Olivier');
+    $advert->setContent("Nous recherchons un développeur C");
+    $advert->setPublished(false);
+    $advert->setImage($img);
+
+    // On peut ne pas définir ni la date ni la publication,
+    // car ces attributs sont définis automatiquement dans le constructeur
+
+    // On récupère l'EntityManager
+    $em = $this->getDoctrine()->getManager();
+
+    // Étape 1 : On « persiste » l'entité
+    $em->persist($advert);
+
+    // Étape 2 : On « flush » tout ce qui a été persisté avant
+    $em->flush();
   }
 }
